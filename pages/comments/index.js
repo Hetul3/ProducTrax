@@ -86,6 +86,10 @@ export default function CommentsPage() {
       return;
     }
 
+    if (result.source.index === result.destination.index) {
+      return;
+    }
+
     const updatedComments = Array.from(comments);
     const [reorderedItem] = updatedComments.splice(result.source.index, 1);
     updatedComments.splice(result.destination.index, 0, reorderedItem);
