@@ -1,11 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { AiOutlineCheck } from "react-icons/ai";
+import { BiSolidPencil } from "react-icons/bi";
 
 export default function CommentsPage() {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [updateCommentId, setUpdateCommentId] = useState(null);
   const [updatedText, setUpdatedText] = useState("");
+
+  const [isClient, setIsClient] = useState(false);
+  const scrollContainerRef = useRef(null);
 
   const fetchComments = async () => {
     const response = await fetch("/api/comments");
@@ -27,33 +32,54 @@ export default function CommentsPage() {
   };
 
   const deleteComment = async (commentId) => {
+    const index = comments.findIndex((c) => c.id === commentId);
     const response = await fetch(`/api/comments/${commentId}`, {
       method: "DELETE",
+      body: JSON.stringify({ index }), // Pass the index here
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    fetchComments();
+
+    if (response.ok) {
+      // Update the local comments state to reflect the deleted comment
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId)
+      );
+    } else {
+      console.error("Failed to delete comment.");
+    }
   };
 
   const handleUpdate = async (commentId) => {
+    const commentToUpdate = comments.find((c) => c.id === commentId);
+
     if (updateCommentId === commentId) {
-      // If the comment is already being updated, save the changes
+      const index = comments.findIndex((c) => c.id === commentId);
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "PUT",
-        body: JSON.stringify({ text: updatedText }),
+        body: JSON.stringify({ text: updatedText, index }), // Pass the index here
         headers: {
           "Content-Type": "application/json",
         },
       });
+
       if (response.ok) {
-        fetchComments();
+        // Update the local comments state to reflect the updated comment
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === commentId
+              ? { ...comment, text: updatedText }
+              : comment
+          )
+        );
         setUpdateCommentId(null);
         setUpdatedText(""); // Clear the updated text
       } else {
         console.error("Failed to update comment.");
       }
     } else {
-      // If the comment is not yet being updated, set it to update mode
       setUpdateCommentId(commentId);
-      const commentToUpdate = comments.find((c) => c.id === commentId);
       setUpdatedText(commentToUpdate.text);
     }
   };
@@ -65,9 +91,6 @@ export default function CommentsPage() {
   useEffect(() => {
     deleteComment(0);
   }, []);
-
-  const [isClient, setIsClient] = useState(false);
-  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     setIsClient(true); // Set to true on the client-side
@@ -97,31 +120,14 @@ export default function CommentsPage() {
     setComments(updatedComments);
   };
 
-  const buttonStyling = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "200px",
-    height: "50px",
-    backgroundColor: "#ff4081",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    cursor: "pointer",
-    margin: "auto",
-    marginTop: "10px",
-  };
-
   return (
     <>
-      <button style={buttonStyling} onClick={handleComment}>
+      <button className="todo-list-submit-button" onClick={handleComment}>
         Submit Comment
       </button>
-      <div className="input-container">
+      <div className="todo-list-input-container">
         <input
-          className="text-input"
+          className="todo-list-text-input"
           type="text"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -133,6 +139,7 @@ export default function CommentsPage() {
             <Droppable droppableId="droppable-comments">
               {(provided, snapshot) => (
                 <div
+                  className="todo-list-items-container"
                   ref={(ref) => {
                     provided.innerRef(ref);
                     scrollContainerRef.current = ref;
@@ -156,25 +163,41 @@ export default function CommentsPage() {
                         >
                           {updateCommentId === comment.id ? (
                             // Render the update form if the comment is being updated
-                            <div>
+                            <div className="todo-list-item-container">
                               <input
+                                className="todo-list-update-input"
                                 type="text"
                                 value={updatedText}
                                 onChange={(e) => setUpdatedText(e.target.value)}
                               />
-                              <button onClick={() => handleUpdate(comment.id)}>
-                                Update
+                              <button
+                                className="todo-list-update-button"
+                                onClick={() => handleUpdate(comment.id)}
+                              >
+                                <BiSolidPencil />
+                              </button>
+                              <button
+                                className="todo-list-delete-button"
+                                onClick={() => deleteComment(comment.id)}
+                              >
+                                <AiOutlineCheck />
                               </button>
                             </div>
                           ) : (
                             // Render the regular comment view if not being updated
-                            <h2>
+                            <h2 className="todo-list-item-text">
                               {comment.id} {comment.text}
-                              <button onClick={() => handleUpdate(comment.id)}>
-                                Update
+                              <button
+                                className="todo-list-update-button"
+                                onClick={() => handleUpdate(comment.id)}
+                              >
+                                <BiSolidPencil />
                               </button>
-                              <button onClick={() => deleteComment(comment.id)}>
-                                Delete
+                              <button
+                                className="todo-list-delete-button"
+                                onClick={() => deleteComment(comment.id)}
+                              >
+                                <AiOutlineCheck />
                               </button>
                             </h2>
                           )}
