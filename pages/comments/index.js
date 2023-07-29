@@ -8,7 +8,6 @@ export default function CommentsPage() {
   const [comment, setComment] = useState("");
   const [updateCommentId, setUpdateCommentId] = useState(null);
   const [updatedText, setUpdatedText] = useState("");
-
   const [isClient, setIsClient] = useState(false);
   const scrollContainerRef = useRef(null);
 
@@ -84,11 +83,14 @@ export default function CommentsPage() {
     }
   };
 
-  useEffect(() => {
-    fetchComments();
-  }, []);
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleComment(); // Call handleComment function when "Enter" key is pressed
+    }
+  };
 
   useEffect(() => {
+    fetchComments();
     deleteComment(0);
   }, []);
 
@@ -125,96 +127,107 @@ export default function CommentsPage() {
       <button className="todo-list-submit-button" onClick={handleComment}>
         Submit Comment
       </button>
-      <div className="todo-list-input-container">
-        <input
-          className="todo-list-text-input"
-          type="text"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
+      <hr />
+      <div className="todo-list-parent-container">
+        <div className="todo-list-input-container">
+          <input
+            className="todo-list-text-input"
+            type="text"
+            placeholder="Add Something"
+            value={comment}
+            onKeyPress={handleKeyPress}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <div class="line"></div>
+        </div>
+        {isClient && ( // Render the content only on the client-side
+          <DragDropContext onDragEnd={handleDragEnd}>
+            {comments.length > 0 ? ( // Check if comments array is not empty before rendering Droppable
+              <Droppable droppableId="droppable-comments">
+                {(provided, snapshot) => (
+                  <div
+                    className="todo-list-items-container"
+                    ref={(ref) => {
+                      provided.innerRef(ref);
+                      scrollContainerRef.current = ref;
+                    }}
+                    {...provided.droppableProps}
+                    data-rbd-droppable-context-id={
+                      snapshot.isUsingPlaceholder ? "droppable-context" : "1"
+                    }
+                  >
+                    {comments.map((comment, index) => (
+                      <Draggable
+                        key={comment.id}
+                        draggableId={comment.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            {updateCommentId === comment.id ? (
+                              // Render the update form if the comment is being updated
+                              <div className="todo-list-item-container">
+                                <input
+                                  className="todo-list-update-input"
+                                  type="text"
+                                  value={updatedText}
+                                  onChange={(e) =>
+                                    setUpdatedText(e.target.value)
+                                  }
+                                />
+                                <button
+                                  className="todo-list-update-button"
+                                  onClick={() => handleUpdate(comment.id)}
+                                >
+                                  <BiSolidPencil />
+                                </button>
+                              </div>
+                            ) : (
+                              // Render the regular comment view if not being updated
+                              <>
+                                <div className="todo-list-item-parent-container">
+                                  <div className="todo-list-item-text-container">
+                                    <h2 className="todo-list-item-text">
+                                      {comment.text}
+                                    </h2>
+                                  </div>
+                                  <div className="todo-list-item-button-container">
+                                    <button
+                                      className="todo-list-update-button"
+                                      onClick={() => handleUpdate(comment.id)}
+                                    >
+                                      <BiSolidPencil />
+                                    </button>
+                                    <button
+                                      className="todo-list-delete-button"
+                                      onClick={() => deleteComment(comment.id)}
+                                    >
+                                      <AiOutlineCheck />
+                                    </button>
+                                  </div>
+                                </div>
+                                <hr className="list-line" />
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            ) : (
+              // Render a fallback if comments array is empty
+              <></>
+            )}
+          </DragDropContext>
+        )}
       </div>
-      {isClient && ( // Render the content only on the client-side
-        <DragDropContext onDragEnd={handleDragEnd}>
-          {comments.length > 0 ? ( // Check if comments array is not empty before rendering Droppable
-            <Droppable droppableId="droppable-comments">
-              {(provided, snapshot) => (
-                <div
-                  className="todo-list-items-container"
-                  ref={(ref) => {
-                    provided.innerRef(ref);
-                    scrollContainerRef.current = ref;
-                  }}
-                  {...provided.droppableProps}
-                  data-rbd-droppable-context-id={
-                    snapshot.isUsingPlaceholder ? "droppable-context" : "1"
-                  }
-                >
-                  {comments.map((comment, index) => (
-                    <Draggable
-                      key={comment.id}
-                      draggableId={comment.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          {updateCommentId === comment.id ? (
-                            // Render the update form if the comment is being updated
-                            <div className="todo-list-item-container">
-                              <input
-                                className="todo-list-update-input"
-                                type="text"
-                                value={updatedText}
-                                onChange={(e) => setUpdatedText(e.target.value)}
-                              />
-                              <button
-                                className="todo-list-update-button"
-                                onClick={() => handleUpdate(comment.id)}
-                              >
-                                <BiSolidPencil />
-                              </button>
-                              <button
-                                className="todo-list-delete-button"
-                                onClick={() => deleteComment(comment.id)}
-                              >
-                                <AiOutlineCheck />
-                              </button>
-                            </div>
-                          ) : (
-                            // Render the regular comment view if not being updated
-                            <h2 className="todo-list-item-text">
-                              {comment.id} {comment.text}
-                              <button
-                                className="todo-list-update-button"
-                                onClick={() => handleUpdate(comment.id)}
-                              >
-                                <BiSolidPencil />
-                              </button>
-                              <button
-                                className="todo-list-delete-button"
-                                onClick={() => deleteComment(comment.id)}
-                              >
-                                <AiOutlineCheck />
-                              </button>
-                            </h2>
-                          )}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ) : (
-            // Render a fallback if comments array is empty
-            <></>
-          )}
-        </DragDropContext>
-      )}
     </>
   );
 }
