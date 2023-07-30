@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Borel&family=Ubuntu&display=swap');
+
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -114,7 +117,8 @@ hr {
   background-color: white;
   color: black;
   padding: 20px;
-  margin-left: 30px;
+  margin-left: 50%;
+  transform: translateX(-50%);
   margin-top: 30px;
   margin-bottom: 20px;
   border-style: none;
@@ -192,6 +196,14 @@ hr {
 }
 
 .todo-list-update-input {
+  background: 0;
+  border: 0;
+  outline: none;
+  font-size: 1.5em;
+  transition: padding 0.3s 0.2s ease;
+  width: 525px;
+  margin-bottom: 20px;
+  color: black;
 }
 
 .todo-list-update-button {
@@ -225,6 +237,7 @@ hr {
 }
 
 .todo-list-item-text {
+  font-family: 'Borel', cursive;
 }
 
 .todo-list-item-parent-container {

@@ -9,6 +9,7 @@ export default function CommentsPage() {
   const [updateCommentId, setUpdateCommentId] = useState(null);
   const [updatedText, setUpdatedText] = useState("");
   const [isClient, setIsClient] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const scrollContainerRef = useRef(null);
 
   const fetchComments = async () => {
@@ -83,9 +84,13 @@ export default function CommentsPage() {
     }
   };
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event, commentId) => {
     if (event.key === "Enter") {
-      handleComment(); // Call handleComment function when "Enter" key is pressed
+      if (event.target.id === "main-input") {
+        handleComment();
+      } else if (event.target.id === "update-input") {
+        handleUpdate(commentId);
+      }
     }
   };
 
@@ -127,10 +132,12 @@ export default function CommentsPage() {
       <button className="todo-list-submit-button" onClick={handleComment}>
         Submit Comment
       </button>
+      <button onClick={setDarkMode(!darkMode)}>Setup dark mode</button>
       <hr />
       <div className="todo-list-parent-container">
         <div className="todo-list-input-container">
           <input
+            id="main-input"
             className="todo-list-text-input"
             type="text"
             placeholder="Add Something"
@@ -138,7 +145,7 @@ export default function CommentsPage() {
             onKeyPress={handleKeyPress}
             onChange={(e) => setComment(e.target.value)}
           />
-          <div class="line"></div>
+          <div className="line"></div>
         </div>
         {isClient && ( // Render the content only on the client-side
           <DragDropContext onDragEnd={handleDragEnd}>
@@ -172,9 +179,14 @@ export default function CommentsPage() {
                               // Render the update form if the comment is being updated
                               <div className="todo-list-item-container">
                                 <input
+                                  key={comment.id}
+                                  id="update-input"
                                   className="todo-list-update-input"
                                   type="text"
                                   value={updatedText}
+                                  onKeyPress={(event) =>
+                                    handleKeyPress(event, comment.id)
+                                  } // Pass comment.id here
                                   onChange={(e) =>
                                     setUpdatedText(e.target.value)
                                   }
