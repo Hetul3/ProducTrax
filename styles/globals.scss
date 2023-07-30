@@ -254,6 +254,15 @@ hr {
   width: 75px;
 }
 
+.todo-list-item-mega-parent-container {
+  text-align: left;
+}
+
+.date-text {
+  font-family: 'Ubuntu', sans-serif;
+  color: rgba(0, 0, 0, 0.525);
+}
+
 .list-line {
   margin: 5px 0px;
   width: var(--list-sizes);
