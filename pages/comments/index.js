@@ -8,79 +8,149 @@ export default function CommentsPage() {
   const [comment, setComment] = useState("");
   const [updateCommentId, setUpdateCommentId] = useState(null);
   const [updatedText, setUpdatedText] = useState("");
+  const [updatedDate, setUpdatedDate] = useState({});
   const [isClient, setIsClient] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const scrollContainerRef = useRef(null);
+
+  const numberToMonth = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const fetchComments = async () => {
     const response = await fetch("/api/comments");
     const data = await response.json();
     setComments(data);
+    console.log(data.date);
   };
 
   const handleComment = async () => {
+    const current = new Date();
+    const temp_month = current.getMonth();
+    const temp_day = current.getDate();
+    const temp_hour = current.getHours();
+    const temp_minute = current.getMinutes();
+    const temp_seconds = current.getSeconds();
+    const now = {
+      temp_month,
+      temp_day,
+      temp_hour,
+      temp_minute,
+      temp_seconds,
+    };
+    const commentData = {
+      comment,
+      now,
+    };
+  
     const response = await fetch("/api/comments", {
       method: "POST",
-      body: JSON.stringify({ comment }),
+      body: JSON.stringify({ commentData }),
       headers: {
         "Content-Type": "application/json",
       },
     });
+  
     const data = await response.json();
     fetchComments();
     console.log(data);
   };
-
-  const deleteComment = async (commentId) => {
-    const index = comments.findIndex((c) => c.id === commentId);
-    const response = await fetch(`/api/comments/${commentId}`, {
-      method: "DELETE",
-      body: JSON.stringify({ index }), // Pass the index here
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      // Update the local comments state to reflect the deleted comment
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId)
-      );
-    } else {
-      console.error("Failed to delete comment.");
-    }
-  };
-
+  
   const handleUpdate = async (commentId) => {
     const commentToUpdate = comments.find((c) => c.id === commentId);
-
+    const current = new Date();
+    const temp_month = current.getMonth();
+    const temp_day = current.getDate();
+    const temp_hour = current.getHours();
+    const temp_minute = current.getMinutes();
+    const temp_seconds = current.getSeconds();
+    const now = {
+      temp_month,
+      temp_day,
+      temp_hour,
+      temp_minute,
+      temp_seconds,
+    };
+    setUpdatedDate(now);
+  
     if (updateCommentId === commentId) {
       const index = comments.findIndex((c) => c.id === commentId);
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "PUT",
-        body: JSON.stringify({ text: updatedText, index }), // Pass the index here
+        body: JSON.stringify({
+          text: updatedText,
+          index,
+          date: {
+            month: updatedDate.temp_month,
+            day: updatedDate.temp_day,
+            hour: updatedDate.temp_hour,
+            minute: updatedDate.temp_minute,
+            seconds: updatedDate.temp_seconds,
+          },
+        }),
         headers: {
           "Content-Type": "application/json",
         },
       });
-
       if (response.ok) {
         // Update the local comments state to reflect the updated comment
         setComments((prevComments) =>
           prevComments.map((comment) =>
             comment.id === commentId
-              ? { ...comment, text: updatedText }
+              ? {
+                  ...comment,
+                  text: updatedText,
+                  date: {
+                    month: updatedDate.temp_month,
+                    day: updatedDate.temp_day,
+                    hour: updatedDate.temp_hour,
+                    minute: updatedDate.temp_minute,
+                    seconds: updatedDate.temp_seconds,
+                  },
+                } // Update the date in the local state
               : comment
           )
         );
+  
         setUpdateCommentId(null);
         setUpdatedText(""); // Clear the updated text
+        setUpdatedDate({});
       } else {
         console.error("Failed to update comment.");
       }
     } else {
       setUpdateCommentId(commentId);
       setUpdatedText(commentToUpdate.text);
+      setUpdatedDate(now);
+    }
+  };
+  
+  const deleteComment = async (commentId) => {
+    const index = comments.findIndex((c) => c.id === commentId);
+    const response = await fetch(`/api/comments/${commentId}`, {
+      method: "DELETE",
+      body: JSON.stringify({ index }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId)
+      );
+    } else {
+      console.error("Failed to delete comment.");
     }
   };
 
@@ -132,7 +202,6 @@ export default function CommentsPage() {
       <button className="todo-list-submit-button" onClick={handleComment}>
         Submit Comment
       </button>
-      <button onClick={setDarkMode(!darkMode)}>Setup dark mode</button>
       <hr />
       <div className="todo-list-parent-container">
         <div className="todo-list-input-container">
@@ -201,26 +270,41 @@ export default function CommentsPage() {
                             ) : (
                               // Render the regular comment view if not being updated
                               <>
-                                <div className="todo-list-item-parent-container">
-                                  <div className="todo-list-item-text-container">
-                                    <h2 className="todo-list-item-text">
-                                      {comment.text}
-                                    </h2>
+                                <div className="todo-list-item-mega-parent-container">
+                                  <div className="todo-list-item-parent-container">
+                                    <div className="todo-list-item-text-container">
+                                      <h2 className="todo-list-item-text">
+                                        {comment.text}
+                                      </h2>
+                                    </div>
+                                    <div className="todo-list-item-button-container">
+                                      <button
+                                        className="todo-list-update-button"
+                                        onClick={() => handleUpdate(comment.id)}
+                                      >
+                                        <BiSolidPencil />
+                                      </button>
+                                      <button
+                                        className="todo-list-delete-button"
+                                        onClick={() =>
+                                          deleteComment(comment.id)
+                                        }
+                                      >
+                                        <AiOutlineCheck />
+                                      </button>
+                                    </div>
                                   </div>
-                                  <div className="todo-list-item-button-container">
-                                    <button
-                                      className="todo-list-update-button"
-                                      onClick={() => handleUpdate(comment.id)}
-                                    >
-                                      <BiSolidPencil />
-                                    </button>
-                                    <button
-                                      className="todo-list-delete-button"
-                                      onClick={() => deleteComment(comment.id)}
-                                    >
-                                      <AiOutlineCheck />
-                                    </button>
-                                  </div>
+                                  <p className="date-text">
+                                    {numberToMonth[comment.date.month]} /{" "}
+                                    {comment.date.day} / {comment.date.hour}:
+                                    {comment.date.minute
+                                      .toString()
+                                      .padStart(2, "0")}
+                                    :
+                                    {comment.date.seconds
+                                      .toString()
+                                      .padStart(2, "0")}
+                                  </p>
                                 </div>
                                 <hr className="list-line" />
                               </>
