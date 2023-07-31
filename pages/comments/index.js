@@ -52,7 +52,7 @@ export default function CommentsPage() {
       comment,
       now,
     };
-
+  
     const response = await fetch("/api/comments", {
       method: "POST",
       body: JSON.stringify({ commentData }),
@@ -60,12 +60,81 @@ export default function CommentsPage() {
         "Content-Type": "application/json",
       },
     });
-
+  
     const data = await response.json();
     fetchComments();
     console.log(data);
   };
-
+  
+  const handleUpdate = async (commentId) => {
+    const commentToUpdate = comments.find((c) => c.id === commentId);
+    const current = new Date();
+    const temp_month = current.getMonth();
+    const temp_day = current.getDate();
+    const temp_hour = current.getHours();
+    const temp_minute = current.getMinutes();
+    const temp_seconds = current.getSeconds();
+    const now = {
+      temp_month,
+      temp_day,
+      temp_hour,
+      temp_minute,
+      temp_seconds,
+    };
+    setUpdatedDate(now);
+  
+    if (updateCommentId === commentId) {
+      const index = comments.findIndex((c) => c.id === commentId);
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          text: updatedText,
+          index,
+          date: {
+            month: updatedDate.temp_month,
+            day: updatedDate.temp_day,
+            hour: updatedDate.temp_hour,
+            minute: updatedDate.temp_minute,
+            seconds: updatedDate.temp_seconds,
+          },
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        // Update the local comments state to reflect the updated comment
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === commentId
+              ? {
+                  ...comment,
+                  text: updatedText,
+                  date: {
+                    month: updatedDate.temp_month,
+                    day: updatedDate.temp_day,
+                    hour: updatedDate.temp_hour,
+                    minute: updatedDate.temp_minute,
+                    seconds: updatedDate.temp_seconds,
+                  },
+                } // Update the date in the local state
+              : comment
+          )
+        );
+  
+        setUpdateCommentId(null);
+        setUpdatedText(""); // Clear the updated text
+        setUpdatedDate({});
+      } else {
+        console.error("Failed to update comment.");
+      }
+    } else {
+      setUpdateCommentId(commentId);
+      setUpdatedText(commentToUpdate.text);
+      setUpdatedDate(now);
+    }
+  };
+  
   const deleteComment = async (commentId) => {
     const index = comments.findIndex((c) => c.id === commentId);
     const response = await fetch(`/api/comments/${commentId}`, {
@@ -82,58 +151,6 @@ export default function CommentsPage() {
       );
     } else {
       console.error("Failed to delete comment.");
-    }
-  };
-
-  const handleUpdate = async (commentId) => {
-
-    //still need to work on changing the date after an update
-    const commentToUpdate = comments.find((c) => c.id === commentId);
-    const current = new Date();
-    const temp_month = current.getMonth();
-    const temp_day = current.getDate();
-    const temp_hour = current.getHours();
-    const temp_minute = current.getMinutes();
-    const temp_seconds = current.getSeconds();
-    const now = {
-      temp_month,
-      temp_day,
-      temp_hour,
-      temp_minute,
-      temp_seconds,
-    };
-    setUpdatedDate(now);
-
-    if (updateCommentId === commentId) {
-      const index = comments.findIndex((c) => c.id === commentId);
-      const response = await fetch(`/api/comments/${commentId}`, {
-        method: "PUT",
-        body: JSON.stringify({ date: updatedDate, text: updatedText, index }), // Pass the index here
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        // Update the local comments state to reflect the updated comment
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.id === commentId
-            //   ? { ...comment, text: updatedText, date: updatedDate }
-            ? { ...comment, text: updatedText }
-              : comment
-          )
-        );
-        
-        setUpdateCommentId(null);
-        setUpdatedText(""); // Clear the updated text
-        setUpdatedDate(null);
-      } else {
-        console.error("Failed to update comment.");
-      }
-    } else {
-      setUpdateCommentId(commentId);
-      setUpdatedText(commentToUpdate.text);
-      setUpdatedDate(now);
     }
   };
 
@@ -280,7 +297,13 @@ export default function CommentsPage() {
                                   <p className="date-text">
                                     {numberToMonth[comment.date.month]} /{" "}
                                     {comment.date.day} / {comment.date.hour}:
-                                    {comment.date.minute}:{comment.date.seconds}
+                                    {comment.date.minute
+                                      .toString()
+                                      .padStart(2, "0")}
+                                    :
+                                    {comment.date.seconds
+                                      .toString()
+                                      .padStart(2, "0")}
                                   </p>
                                 </div>
                                 <hr className="list-line" />
