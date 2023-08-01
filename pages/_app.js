@@ -1,5 +1,11 @@
 import '@/styles/globals.scss'
+import Navbar from "../components/navbar.js";
 
 export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <>
+      <Navbar />
+      <Component {...pageProps} />
+    </>
+  );
 }

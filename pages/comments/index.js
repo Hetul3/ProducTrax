@@ -52,7 +52,7 @@ export default function CommentsPage() {
       comment,
       now,
     };
-  
+
     const response = await fetch("/api/comments", {
       method: "POST",
       body: JSON.stringify({ commentData }),
@@ -60,12 +60,12 @@ export default function CommentsPage() {
         "Content-Type": "application/json",
       },
     });
-  
+
     const data = await response.json();
     fetchComments();
     console.log(data);
   };
-  
+
   const handleUpdate = async (commentId) => {
     const commentToUpdate = comments.find((c) => c.id === commentId);
     const current = new Date();
@@ -82,7 +82,7 @@ export default function CommentsPage() {
       temp_seconds,
     };
     setUpdatedDate(now);
-  
+
     if (updateCommentId === commentId) {
       const index = comments.findIndex((c) => c.id === commentId);
       const response = await fetch(`/api/comments/${commentId}`, {
@@ -121,7 +121,7 @@ export default function CommentsPage() {
               : comment
           )
         );
-  
+
         setUpdateCommentId(null);
         setUpdatedText(""); // Clear the updated text
         setUpdatedDate({});
@@ -134,7 +134,7 @@ export default function CommentsPage() {
       setUpdatedDate(now);
     }
   };
-  
+
   const deleteComment = async (commentId) => {
     const index = comments.findIndex((c) => c.id === commentId);
     const response = await fetch(`/api/comments/${commentId}`, {
