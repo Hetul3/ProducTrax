@@ -10,7 +10,6 @@ export default function Home() {
   return (
     <>
       <h1>TODO the landing page</h1>
-      <Link href="/comments">Go to comments</Link>
     </>
   );
 }
