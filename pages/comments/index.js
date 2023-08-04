@@ -2,8 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiSolidPencil } from "react-icons/bi";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function CommentsPage() {
+  const router = useRouter();
+  const { date: session, status } = useSession();
+
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [updateCommentId, setUpdateCommentId] = useState(null);
@@ -181,6 +186,12 @@ export default function CommentsPage() {
     }
   }, [isClient]);
 
+  useEffect(() => {
+    if (status !== "authenticated") {
+      router.replace("/404");
+    }
+  }, [status, router]);
+
   const handleDragEnd = (result) => {
     if (!result.destination) {
       return;
@@ -196,7 +207,6 @@ export default function CommentsPage() {
 
     setComments(updatedComments);
   };
-
   return (
     <>
       <button className="todo-list-submit-button" onClick={handleComment}>
