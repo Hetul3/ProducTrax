@@ -1,22 +1,20 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
-  const { date: session, status } = useSession();
+  const { data: session, status } = useSession();
 
-  //send user back to the index page after signing out
   const handleSignOut = async () => {
-    await signOut(); 
+    await signOut();
     window.location.replace("/");
   };
 
   return (
     <nav className="navbar">
       <ul className="nav-links">
-        {/* Put in the path to the catch all routes */}
-
-        {status != "authenticated" && (
+        {status !== "authenticated" && (
           <li className="nav-item">
             <Link href="/api/auth/signin">
               <span
@@ -32,7 +30,7 @@ const Navbar = () => {
           </li>
         )}
 
-        {status === "authenticated" && (
+        {status === "authenticated" && session && session.user && (
           <>
             <li className="nav-item">
               <Link href="/api/auth/signout">
@@ -52,6 +50,20 @@ const Navbar = () => {
               <Link href="/comments">
                 <span className="nav-link">Your TODO List</span>
               </Link>
+            </li>
+            <li className="nav-item">
+              <Link href="/comments">
+                <span className="nav-link">{session.user.name}</span>
+              </Link>
+              <Image
+              className="profile-image"
+                  src={`/api/proxy-image?imageUrl=${encodeURIComponent(
+                    session.user.image
+                  )}`}
+                  width={30}
+                  height={30}
+                  alt="profile-pic"
+                />
             </li>
           </>
         )}
