@@ -3,8 +3,6 @@ import { comments } from "../../../data/comments";
 import Topic from "@/models/mongoComments";
 import { getSession } from "next-auth/react";
 
-let commentCounter = comments.length + 1;
-
 export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
@@ -35,7 +33,6 @@ export default async function handler(req, res) {
         seconds: now.temp_seconds,
       },
     };
-    commentCounter++;
     comments.push(newComment);
 
     await connectMongoDB();

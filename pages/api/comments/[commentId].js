@@ -1,8 +1,10 @@
 import { comments } from "../../../data/comments";
+import connectMongoDB from "@/libs/mongodb";
+import Topic from "@/models/mongoComments";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { commentId } = req.query;
-  const { text, index, updatedDate } = req.body; // Rename 'currentDate' to 'updatedDate'
+  const { text, date } = req.body;// Rename 'currentDate' to 'updatedDate'
 
   if (req.method === "GET") {
     const comment = comments.find(
@@ -18,14 +20,38 @@ export default function handler(req, res) {
     );
     comments.splice(deletedIndex, 1);
     res.status(200).json(deletedComment);
-  } else if (req.method === "PUT") {
-    const commentToUpdate = comments[index];
-    if (!commentToUpdate) {
-      res.status(404).json({ error: "Comment not found." });
-    } else {
-      commentToUpdate.text = text;
-      commentToUpdate.date = updatedDate; // Update the comment's date with 'updatedDate'
-      res.status(200).json(commentToUpdate);
+
+    try {
+      await connectMongoDB();
+      await Topic.deleteOne({ id: commentId }); // Delete the comment from MongoDB
+      res.status(200).json({ message: "Comment deleted from MongoDB" });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error when deleting" });
+    }
+  } else  if (req.method === "PUT") {
+    try {
+      await connectMongoDB();
+
+      const updatedComment = await Topic.findOneAndUpdate(
+        { id: parseInt(commentId) },
+        {
+          $set: {
+            text: text,
+            date: {
+              month: date.month,
+              day: date.day,
+              hour: date.hour,
+              minute: date.minute,
+              seconds: date.seconds,
+            },
+          },
+        },
+        { new: true } // Return the updated document
+      );
+
+      res.status(200).json(updatedComment);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error when updating" });
     }
   }
 }

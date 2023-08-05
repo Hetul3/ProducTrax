@@ -104,12 +104,10 @@ export default function CommentsPage() {
     setUpdatedDate(now);
 
     if (updateCommentId === commentId) {
-      const index = comments.findIndex((c) => c.id === commentId);
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "PUT",
         body: JSON.stringify({
           text: updatedText,
-          index,
           date: {
             month: updatedDate.temp_month,
             day: updatedDate.temp_day,
@@ -156,23 +154,37 @@ export default function CommentsPage() {
   };
 
   const deleteComment = async (commentId) => {
-    const index = comments.findIndex((c) => c.id === commentId);
-    const response = await fetch(`/api/comments/${commentId}`, {
-      method: "DELETE",
-      body: JSON.stringify({ index }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const index = comments.findIndex((c) => c.id === commentId);
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+        body: JSON.stringify({ index }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
     if (response.ok) {
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId)
-      );
+      // Delete the comment from MongoDB by making a DELETE request to the API
+      const deletedResponse = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      });
+
+      if (deletedResponse.ok) {
+        // If successful, remove the comment from the local state
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment.id !== commentId)
+        );
+      } else {
+        console.error("Failed to delete comment from MongoDB.");
+      }
     } else {
-      console.error("Failed to delete comment.");
+      console.error("Failed to delete comment from local state.");
     }
-  };
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+  }
+};
 
   const handleKeyPress = (event, commentId) => {
     if (event.key === "Enter") {
