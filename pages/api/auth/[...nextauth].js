@@ -1,7 +1,6 @@
 //for this to work, you need to go on github -> Profile -> Settings -> Developer Settings ->
 //OAuth Apps -> When giving the link, set it to http://localhost:3000/ when developing, and the actual link when deploying
 
-
 //for google Google cloud -> console -> api service -> credentials -> config consent screen -> credentials -> add url
 import NextAuth from "next-auth";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
@@ -49,6 +48,15 @@ export default NextAuth({
     jwt: true,
   },
   jwt: {
-    secret: 'fewoh4i3th$IOG#GI',
-  }
+    secret: "fewoh4i3th$IOG#GI",
+  },
+  callbacks: {
+    async session({ session, token, user }) {
+      if (user) {
+        session.user.id = user.id;
+      }
+
+      return session;
+    },
+  },
 });

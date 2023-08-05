@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiSolidPencil } from "react-icons/bi";
-import { useSession } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function CommentsPage() {
@@ -53,22 +53,37 @@ export default function CommentsPage() {
       temp_minute,
       temp_seconds,
     };
-    const commentData = {
-      comment,
-      now,
-    };
 
-    const response = await fetch("/api/comments", {
-      method: "POST",
-      body: JSON.stringify({ commentData }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const userSession = await getSession();
+      console.log(userSession);
 
-    const data = await response.json();
-    fetchComments();
-    console.log(data);
+      const userID = userSession.user.id;
+  
+      const commentData = {
+        comment,
+        now,
+        userID,
+      };
+  
+      const response = await fetch("/api/comments", {
+        method: "POST",
+        body: JSON.stringify({ commentData }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        fetchComments();
+        console.log(data);
+      } else {
+        console.error("Failed to create comment.");
+      }
+    } catch (error) {
+      console.error("Error fetching session:", error);
+    }
   };
 
   const handleUpdate = async (commentId) => {
