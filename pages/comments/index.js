@@ -355,7 +355,6 @@ export default function CommentsPage() {
                 )}
               </Droppable>
             ) : (
-              // Render a fallback if comments array is empty
               <></>
             )}
           </DragDropContext>

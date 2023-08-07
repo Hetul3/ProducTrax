@@ -10,9 +10,13 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const { data: session, status } = useSession();
 
+  const styling = {
+    textAlign: 'center',
+
+  }
   return (
     <>
-      <h1>TODO the landing page</h1>
+      <h1 style={styling}>TODO the landing page</h1>
     </>
   );
 }
