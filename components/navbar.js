@@ -66,7 +66,7 @@ const Navbar = () => {
                   </Link>
                 </div>
                 <div className="nav-item-container">
-                  <Link href="/comments">
+                  <Link href="/timer">
                     <span className="nav-link">
                       <CgTimer className="list-icon" />
                     </span>

@@ -459,6 +459,105 @@ hr {
   transition: 0.2s;
 }
 
+//timer
+
+.circle-timer-container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.timer-parent-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+}
+
+.timer-interactibles-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.timer-divider {
+  font-size: 40px;
+}
+
+.timer-inputs-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.timer-input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.timer-input {
+  color: black;
+  font-size: 40px;
+  padding: 5px;
+  width: 80px;
+  height: 50px;
+  text-align: center;
+  background: rgb(255, 255, 255);
+  border: 2px solid rgb(0, 0, 0);
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.timer-buttons-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.timer-start-button,
+.timer-restart-button {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100px;
+  height: 50px;
+  font-size: 20px;
+  color: black;
+  background: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.timer-start-button:hover {
+  box-shadow: 0px 0px 20px #67cd6c;
+  transition: 0.2s;
+}
+
+.timer-restart-button:hover {
+  transition: 0.2s;
+  box-shadow: 0px 0px 20px #d36868;;
+}
+
+
+.inside-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.inside-timer-time {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -473,3 +572,4 @@ hr {
     max-width: calc(100% - 20px);
   }
 }
+
