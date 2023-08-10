@@ -7,9 +7,9 @@ export default function Notes() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [clientSide, setClientSide] = useState(false);
+  const [addingNote, setAddingNote] = useState(false);
 
   useEffect(() => {
-    // Set clientSide to true after initial rendering
     setClientSide(true);
   }, []);
 
@@ -56,6 +56,13 @@ export default function Notes() {
     } catch (error) {
       console.error("Error when fetching session:", error);
     }
+    setAddingNote(false);
+  };
+
+  const handleCancel = () => {
+    setTitle("");
+    setNote("");
+    setAddingNote(false); // Exit adding note mode
   };
 
   useEffect(() => {
@@ -72,23 +79,34 @@ export default function Notes() {
     <>
       <h1>This is a test to see if this works</h1>
       <hr />
-      <input
-        id="title-input"
-        type="text"
-        placeholder="Add title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        maxLength={50}
-      />
-      <input
-        id="note-input"
-        type="text"
-        placeholder="Add note"
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        maxLength={1000}
-      />
-      <button onClick={handleCreate}>Click to submit</button>
+      {addingNote ? ( // Display input fields and buttons when adding note
+        <>
+          <input
+            id="title-input"
+            type="text"
+            placeholder="Add title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={50}
+          />
+          <input
+            id="note-input"
+            type="text"
+            placeholder="Add note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            maxLength={1000}
+          />
+          <button onClick={handleCreate}>Click to submit</button>
+          <button onClick={handleCancel}>Cancel</button>
+        </>
+      ) : (
+        <button onClick={() => setAddingNote(true)}>
+          {clientSide && status === "authenticated" && session
+            ? "Add"
+            : "Add"}
+        </button>
+      )}
       <div>
         {notes.map((note) => (
           <div key={note.id}>
@@ -109,4 +127,3 @@ export default function Notes() {
     </>
   );
 }
-
