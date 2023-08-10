@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { AiOutlineUnorderedList } from "react-icons/ai";
-import { CgTimer } from "react-icons/cg";
+import { CgTimer, CgNotes } from "react-icons/cg";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -62,6 +62,13 @@ const Navbar = () => {
                   <Link href="/comments">
                     <span className="nav-link">
                       <AiOutlineUnorderedList className="list-icon" />
+                    </span>
+                  </Link>
+                </div>
+                <div className="nav-item-container">
+                  <Link href="/notes">
+                    <span className="nav-link">
+                      <CgNotes className="list-icon" />
                     </span>
                   </Link>
                 </div>
