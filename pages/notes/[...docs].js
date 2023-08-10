@@ -8,6 +8,9 @@ export default function NotePage() {
 
   const [noteTitle, setNoteTitle] = useState("");
   const [noteText, setNoteText] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [updatedNote, setUpdatedNote] = useState("");
+  const [updatedTitle, setUpdatedTitle] = useState("");
 
   const fetchNote = async () => {
     const session = await getSession();
@@ -17,7 +20,6 @@ export default function NotePage() {
       const response = await fetch(`/api/notes/${UID}/${NID}`);
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setNoteTitle(data.title);
         setNoteText(data.text);
       } else {
@@ -28,11 +30,36 @@ export default function NotePage() {
     }
   };
 
+  const updateNote = async () => {
+    const session = await getSession();
+      const UID = session.user.id;
+      const NID = docs[1];
+    try {
+      const response = await fetch(`/api/notes/${UID}/${NID}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          title: updatedTitle,
+          text: updatedNote,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if(response.ok) {
+        fetchNote();
+      }
+    } catch (error) {
+      console.error("Error when updateing", error);
+    }
+    setEditing(false);
+  };
+
   const deleteNote = async () => {
     try {
-        const session = await getSession();
-        const UID = session.user.id;
-        const NID = docs[1];
+      const session = await getSession();
+      const UID = session.user.id;
+      const NID = docs[1];
       const response = await fetch(`/api/notes/${UID}/${NID}`, {
         method: "DELETE",
         body: JSON.stringify({}),
@@ -40,8 +67,8 @@ export default function NotePage() {
           "Content-Type": "application/json",
         },
       });
-      
-      if(response.ok) {
+
+      if (response.ok) {
         router.replace("/notes");
       }
     } catch (error) {
@@ -55,11 +82,35 @@ export default function NotePage() {
     }
   }, [docs]);
 
+  useEffect(() => {
+    setUpdatedNote(noteText);
+    setUpdatedTitle(noteTitle);
+  }, [noteText, noteTitle]);
+
   return (
     <>
       <h1>Testing</h1>
-      <h2>{noteTitle}</h2>
-      <p>{noteText}</p>
+      {editing ? (
+        <>
+          <input
+            type="text"
+            value={updatedTitle}
+            onChange={(e) => setUpdatedTitle(e.target.value)}
+          />
+          <input
+            type="text"
+            value={updatedNote}
+            onChange={(e) => setUpdatedNote(e.target.value)}
+          />
+          <button onClick={updateNote}>Save</button>
+        </>
+      ) : (
+        <>
+          <h2>{noteTitle}</h2>
+          <p>{noteText}</p>
+          <button onClick={() => setEditing(true)}>Edit</button>
+        </>
+      )}
       <button onClick={deleteNote}>Delete</button>
     </>
   );

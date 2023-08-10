@@ -2,11 +2,10 @@ import connectMongoDB from "@/libs/mongodb";
 import TopicNote from "@/models/mongoNotes";
 
 export default async function handler(req, res) {
-  const routeParts = req.url.split('/').filter(part => part); 
-  const [UID, NID] = routeParts.slice(-2); 
+  const routeParts = req.url.split("/").filter((part) => part);
+  const [UID, NID] = routeParts.slice(-2);
 
-  //info of the changed stuff for the update
-  const {title, text} = req.body;
+  const { title, text } = req.body;
 
   if (req.method === "DELETE") {
     try {
@@ -25,24 +24,21 @@ export default async function handler(req, res) {
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
-
-
-
-    //currently trying to get the update feature to work
-  } else if(req.method === "PUT") {
+  } else if (req.method === "PUT") {
     try {
       await connectMongoDB();
-      
-      const upatedNote = await TopicNote.fineOneAndUpdate(
-        {userId: UID, id: NID}, 
+      const newInfo = await TopicNote.findOneAndUpdate (
+        { userId: UID, id: NID },
         {
           $set: {
-
-          }
+            title: title,
+            text: text,
+          },
         }
-      )
-    } catch(error) {
-      res.status(500).json({error: "Internal server error"});
+      );
+      res.status(200).json({ message: "note updated" });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error when updating" });
     }
   }
 }
