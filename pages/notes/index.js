@@ -2,6 +2,7 @@ import { useSession, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { AiOutlinePlus } from "react-icons/ai";
 
 export default function Notes() {
   const router = useRouter();
@@ -77,48 +78,72 @@ export default function Notes() {
 
   return (
     <>
-      <h1>This is a test to see if this works</h1>
+      <h1 className="notes-header">Long Form Notes to Manage Information</h1>
       <hr />
-      {addingNote ? ( // Display input fields and buttons when adding note
-        <>
+      {addingNote ? (
+        <div className="note-interactibles">
           <input
+            className="notes-title-form"
             id="title-input"
             type="text"
             placeholder="Add title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            maxLength={50}
+            maxLength={30}
           />
-          <input
+          <hr />
+          <textarea
+            className="notes-text-form"
+            rows="10"
             id="note-input"
             type="text"
             placeholder="Add note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            maxLength={1000}
+            maxLength={2500}
           />
-          <button onClick={handleCreate}>Click to submit</button>
-          <button onClick={handleCancel}>Cancel</button>
-        </>
+          <button className="notes-button" onClick={handleCreate}>
+            Click to submit
+          </button>
+          <button className="notes-button" onClick={handleCancel}>
+            Cancel
+          </button>
+        </div>
       ) : (
-        <button onClick={() => setAddingNote(true)}>
-          {clientSide && status === "authenticated" && session
-            ? "Add"
-            : "Add"}
-        </button>
+        <div className="notes-button-container">
+          <button
+            className="notes-add-button"
+            onClick={() => setAddingNote(true)}
+          >
+            {clientSide && status === "authenticated" && session
+              ? "Add"
+              : "Add"}
+            <AiOutlinePlus />
+          </button>
+        </div>
       )}
-      <div>
+      <div className="post-it-parent-container">
         {notes.map((note) => (
           <div key={note.id}>
             {clientSide && status === "authenticated" && session ? (
               <Link href={`/notes/${session.user.id}/${note.id}`}>
-                <h2>{note.title}</h2>
-                <p>{note.text}</p>
+                <div className="post-it">
+                  <h1>{note.title}</h1>
+                  <p className="post-it-text">
+                    {note.text.length > 100
+                      ? `${note.text.slice(0, 100)}...`
+                      : note.text}
+                  </p>
+                </div>
               </Link>
             ) : (
               <div>
-                <h2>{note.title}</h2>
-                <p>{note.text}</p>
+                <h1 className="post-it-header">{note.title}</h1>
+                <p className="post-it-text">
+                  {note.text.length > 100
+                    ? `${note.text.slice(0, 100)}...`
+                    : note.text}
+                </p>
               </div>
             )}
           </div>

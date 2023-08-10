@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { getSession } from "next-auth/react";
+import { AiOutlineDelete } from "react-icons/ai";
+import { BiSolidPencil } from "react-icons/bi";
 
 export default function NotePage() {
   const router = useRouter();
@@ -32,8 +34,8 @@ export default function NotePage() {
 
   const updateNote = async () => {
     const session = await getSession();
-      const UID = session.user.id;
-      const NID = docs[1];
+    const UID = session.user.id;
+    const NID = docs[1];
     try {
       const response = await fetch(`/api/notes/${UID}/${NID}`, {
         method: "PUT",
@@ -46,7 +48,7 @@ export default function NotePage() {
         },
       });
 
-      if(response.ok) {
+      if (response.ok) {
         fetchNote();
       }
     } catch (error) {
@@ -87,31 +89,55 @@ export default function NotePage() {
     setUpdatedTitle(noteTitle);
   }, [noteText, noteTitle]);
 
+  const buttonStyling = {
+    width: "100px",
+    marginTop: "20px",
+  };
+
   return (
-    <>
-      <h1>Testing</h1>
+    <div className="note-parent">
       {editing ? (
-        <>
+        <div>
           <input
+            className="notes-title-form"
             type="text"
             value={updatedTitle}
             onChange={(e) => setUpdatedTitle(e.target.value)}
+            maxLength={30}
           />
-          <input
+          <textarea
+            rows="25"
+            className="notes-text-form"
             type="text"
             value={updatedNote}
             onChange={(e) => setUpdatedNote(e.target.value)}
+            maxLength={2500}
           />
-          <button onClick={updateNote}>Save</button>
-        </>
+          <button className="notes-button" onClick={updateNote}>
+            Save
+          </button>
+        </div>
       ) : (
-        <>
-          <h2>{noteTitle}</h2>
-          <p>{noteText}</p>
-          <button onClick={() => setEditing(true)}>Edit</button>
-        </>
+        <div>
+          <h2 className="note-title-style">{noteTitle}</h2>
+          <p className="note-text-style">{noteText}</p>
+          <hr/>
+          <button
+            style={buttonStyling}
+            className="notes-button"
+            onClick={() => setEditing(true)}
+          >
+            <BiSolidPencil />
+          </button>
+        </div>
       )}
-      <button onClick={deleteNote}>Delete</button>
-    </>
+      <button
+        style={buttonStyling}
+        className="notes-button"
+        onClick={deleteNote}
+      >
+        <AiOutlineDelete />
+      </button>
+    </div>
   );
 }

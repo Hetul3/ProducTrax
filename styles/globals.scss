@@ -1,5 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Borel&family=Ubuntu&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Borel&family=Ubuntu&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@10..48,500&family=Karla&display=swap');
 
+@import url(https://fonts.googleapis.com/css?family=Permanent+Marker);
 
 :root {
   --max-width: 1100px;
@@ -237,7 +239,7 @@ hr {
 }
 
 .todo-list-item-text {
-  font-family: 'Borel', cursive;
+  font-family: "Borel", cursive;
 }
 
 .todo-list-item-parent-container {
@@ -259,7 +261,7 @@ hr {
 }
 
 .date-text {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
   color: rgba(0, 0, 0, 0.525);
 }
 
@@ -270,8 +272,6 @@ hr {
   opacity: 0.7;
   height: 2px;
 }
-
-
 
 /* Navbar */
 .navbar {
@@ -304,15 +304,15 @@ hr {
 .nav-item-container:hover {
   transform: translate(-3px, -3px);
   box-shadow: 3px 3px 5px rgb(149, 149, 149);
-  transition: 0.2s;;
+  transition: 0.2s;
 }
 
 .nav-item {
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: row; 
-  align-items: center; 
+  flex-direction: row;
+  align-items: center;
   transform: translate(45px);
 }
 
@@ -321,7 +321,7 @@ hr {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative; 
+  position: relative;
 }
 
 .nav-link {
@@ -381,14 +381,14 @@ hr {
 .tooltip {
   position: fixed;
   right: 0;
-  background-color: rgba(254, 254, 254, 0.874); 
+  background-color: rgba(254, 254, 254, 0.874);
   border: 1px solid #000000;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.719);
-  opacity: 0; 
-  pointer-events: none; 
-  transition: opacity 0.3s ease-in-out; 
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
   top: 70px;
   right: 30px;
   width: 400px;
@@ -396,8 +396,8 @@ hr {
 }
 
 .tooltip.show {
-  opacity: 1; 
-  pointer-events: auto; 
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .tooltip-link {
@@ -433,7 +433,7 @@ hr {
 
 .user-name {
   font-size: 40px;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
   margin-bottom: 5px;
 }
 
@@ -540,9 +540,8 @@ hr {
 
 .timer-restart-button:hover {
   transition: 0.2s;
-  box-shadow: 0px 0px 20px #d36868;;
+  box-shadow: 0px 0px 20px #d36868;
 }
-
 
 .inside-timer-container {
   display: flex;
@@ -556,7 +555,210 @@ hr {
   font-weight: bold;
 }
 
+//post-it-note
 
+.note-parent {
+  margin: 20px;
+  justify-content: center;
+  text-align: center;
+}
+
+.note-interactibles {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  align-items: center;
+}
+
+.notes-title-form {
+  text-align: center;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  font-size: 1.2rem;
+	margin: 0 auto;
+  padding: 5px;
+  border-radius: 0.2rem;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  width: 90%;
+  display: block;
+  outline: 2px solid black;
+  border-bottom: 0.3rem solid transparent;
+}
+
+.notes-text-form {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  font-size: 1rem;
+	margin: 0 auto;
+  padding: 5px;
+  border-radius: 0.2rem;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  width: 90%;
+  display: block;
+  outline: 2px solid black;
+  border-bottom: 0.3rem solid transparent;
+}
+
+.post-it-parent-container {
+  margin-left: 20px;
+  margin-right: 20px;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.post-it {
+  outline: 2px black solid;
+  width: 250px;
+  height: 240px;
+  position: relative;
+  background: rgb(255, 255, 198);
+  overflow: hidden;
+  margin: 30px 20px;
+  padding: 20px;
+  border-radius: 0 0 0 30px/45px;
+  font-family: "Permanent Marker", cursive;
+  line-height: 1.7em;
+  font-size: 19px;
+  color: #130d6b;
+  transition: 0.2s;
+}
+
+.post-it:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 25px;
+  background: #ffa;
+  box-shadow: 3px -2px 10px rgba(0, 0, 0, 0.2),
+    inset 15px -15px 15px rgba(0, 0, 0, 0.3);
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  transform: skewX(25deg);
+}
+
+.post-it:hover {
+  box-shadow: 5px 5px 15px black;
+  transform: translate(-3px, -3px);
+  transition: 0.2s;
+}
+
+post-it {
+  font-size: 25px;
+  position: relative;
+}
+
+.post-it-text {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  line-height: 100%;
+  white-space: pre-line;
+}
+
+.note-text {
+  white-space: pre-line;
+}
+
+.notes-button {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #fff;
+  border: 0 solid #e2e8f0;
+  border-radius: 1.5rem;
+  box-sizing: border-box;
+  color: #0d172a;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Basier circle", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none #0d172a solid;
+  text-decoration-thickness: auto;
+  transition: all 0.1s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 200px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.368);
+  transition: 0.1s;
+}
+
+.notes-button:hover {
+  background-color: #1e293b;
+  color: #fff;
+  box-shadow: 0px 0px 20px rgb(130, 255, 130);
+  transition: 0.1s;
+}
+
+.notes-add-button {
+  padding: 20px;
+  margin-top: 10px;
+  background-color: #fff;
+  border: 0 solid #e2e8f0;
+  border-radius: 1.5rem;
+  box-sizing: border-box;
+  color: #0d172a;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Basier circle", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none #0d172a solid;
+  text-decoration-thickness: auto;
+  transition: all 0.1s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.322);
+  transition: 0.1s;
+}
+
+.notes-add-button:hover {
+  background-color: #1e293b;
+  transform: translate(3px, 3px);
+  box-shadow: none;
+  color: #fff;
+  transition: 0.1s;
+}
+
+.notes-button-container {
+  justify-content: center;
+  text-align: center;
+}
+
+.notes-header {
+  font-family: "Ubuntu", sans-serif;
+  text-align: center; /* Center align the content horizontally */
+  padding: 20px 0;
+}
+
+.note-title-style {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.note-text-style {
+  font-family: 'Karla', sans-serif;
+  font-family: 20px;
+  white-space: pre-line;
+  text-align: left;
+  margin-left: 30px;
+  margin-right: 30px;
+}
 
 @media (prefers-color-scheme: dark) {
   html {
@@ -572,4 +774,3 @@ hr {
     max-width: calc(100% - 20px);
   }
 }
-
