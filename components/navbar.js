@@ -11,8 +11,8 @@ const Navbar = () => {
   const tooltipRef = useRef(null);
 
   const handleSignOut = async () => {
-    await signOut();
     window.location.replace("index.js");
+    await signOut();
   };
 
   const handleProfileClick = () => {
@@ -120,8 +120,8 @@ const Navbar = () => {
                         className="tooltip-link"
                         onClick={(e) => {
                           e.stopPropagation();
-                          signOut();
                           handleSignOut();
+                          signOut();
                         }}
                       >
                         Sign out
