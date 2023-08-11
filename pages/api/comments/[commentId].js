@@ -4,22 +4,32 @@ import Topic from "@/models/mongoComments";
 
 export default async function handler(req, res) {
   const { commentId } = req.query;
-  const { text, date } = req.body;// Rename 'currentDate' to 'updatedDate'
+  const { text, date } = req.body; // Rename 'currentDate' to 'updatedDate'
+  // if (req.method === "GET") {
+  //   const comment = comments.find(
+  //     (comment) => comment.id === parseInt(commentId)
+  //   );
+  //   res.status(200).json(comment);
 
-  if (req.method === "GET") {
-    const comment = comments.find(
-      (comment) => comment.id === parseInt(commentId)
-    );
-    res.status(200).json(comment);
-  } else if (req.method === "DELETE") {
-    const deletedComment = comments.find(
-      (comment) => comment.id === parseInt(commentId)
-    );
-    const deletedIndex = comments.findIndex(
-      (comment) => comment.id === parseInt(commentId)
-    );
-    comments.splice(deletedIndex, 1);
-    res.status(200).json(deletedComment);
+  //   try {
+  //     await connectMongoDB();
+  //     const 
+  //   }
+
+  // } 
+  // else 
+  if (req.method === "DELETE") {
+    // const commentId = parseInt(req.params.commentId);
+
+    // const deletedIndex = comments.findIndex(
+    //   (comment) => comment.id === commentId
+    // );
+
+    // if (deletedIndex === -1) {
+    //   return res.status(404).json({ error: "Comment not found" });
+    // }
+
+    // const deletedComment = comments.splice(deletedIndex, 1)[0];
 
     try {
       await connectMongoDB();
@@ -28,7 +38,7 @@ export default async function handler(req, res) {
     } catch (error) {
       res.status(500).json({ error: "Internal server error when deleting" });
     }
-  } else  if (req.method === "PUT") {
+  } else if (req.method === "PUT") {
     try {
       await connectMongoDB();
 
