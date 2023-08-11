@@ -6,3 +6,5 @@ Combining the best productivity features in a minalist and coherent webapge
 - [x] Connect with database to seperate data from different users
 - [x] Connect with database to hold information for long term
 - [x] Implement other features
+
+Check it out here: https://todo-v1-ten.vercel.app
