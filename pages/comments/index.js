@@ -2,8 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiSolidPencil } from "react-icons/bi";
+import { useSession, getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function CommentsPage() {
+  const router = useRouter();
+  const { date: session, status } = useSession();
+
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [updateCommentId, setUpdateCommentId] = useState(null);
@@ -48,24 +53,39 @@ export default function CommentsPage() {
       temp_minute,
       temp_seconds,
     };
-    const commentData = {
-      comment,
-      now,
-    };
+
+    try {
+      const userSession = await getSession();
+      console.log(userSession);
+
+      const userID = userSession.user.id;
   
-    const response = await fetch("/api/comments", {
-      method: "POST",
-      body: JSON.stringify({ commentData }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+      const commentData = {
+        comment,
+        now,
+        userID,
+      };
   
-    const data = await response.json();
-    fetchComments();
-    console.log(data);
+      const response = await fetch("/api/comments", {
+        method: "POST",
+        body: JSON.stringify({ commentData }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        fetchComments();
+        console.log(data);
+      } else {
+        console.error("Failed to create comment.");
+      }
+    } catch (error) {
+      console.error("Error fetching session:", error);
+    }
   };
-  
+
   const handleUpdate = async (commentId) => {
     const commentToUpdate = comments.find((c) => c.id === commentId);
     const current = new Date();
@@ -82,14 +102,12 @@ export default function CommentsPage() {
       temp_seconds,
     };
     setUpdatedDate(now);
-  
+
     if (updateCommentId === commentId) {
-      const index = comments.findIndex((c) => c.id === commentId);
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "PUT",
         body: JSON.stringify({
           text: updatedText,
-          index,
           date: {
             month: updatedDate.temp_month,
             day: updatedDate.temp_day,
@@ -121,7 +139,7 @@ export default function CommentsPage() {
               : comment
           )
         );
-  
+
         setUpdateCommentId(null);
         setUpdatedText(""); // Clear the updated text
         setUpdatedDate({});
@@ -134,25 +152,39 @@ export default function CommentsPage() {
       setUpdatedDate(now);
     }
   };
-  
+
   const deleteComment = async (commentId) => {
-    const index = comments.findIndex((c) => c.id === commentId);
-    const response = await fetch(`/api/comments/${commentId}`, {
-      method: "DELETE",
-      body: JSON.stringify({ index }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const index = comments.findIndex((c) => c.id === commentId);
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+        body: JSON.stringify({ index }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
     if (response.ok) {
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId)
-      );
+      // Delete the comment from MongoDB by making a DELETE request to the API
+      const deletedResponse = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      });
+
+      if (deletedResponse.ok) {
+        // If successful, remove the comment from the local state
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment.id !== commentId)
+        );
+      } else {
+        console.error("Failed to delete comment from MongoDB.");
+      }
     } else {
-      console.error("Failed to delete comment.");
+      console.error("Failed to delete comment from local state.");
     }
-  };
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+  }
+};
 
   const handleKeyPress = (event, commentId) => {
     if (event.key === "Enter") {
@@ -181,6 +213,12 @@ export default function CommentsPage() {
     }
   }, [isClient]);
 
+  useEffect(() => {
+    if (status !== "authenticated") {
+      router.replace("/404");
+    }
+  }, [status, router]);
+
   const handleDragEnd = (result) => {
     if (!result.destination) {
       return;
@@ -196,7 +234,6 @@ export default function CommentsPage() {
 
     setComments(updatedComments);
   };
-
   return (
     <>
       <button className="todo-list-submit-button" onClick={handleComment}>
@@ -318,7 +355,6 @@ export default function CommentsPage() {
                 )}
               </Droppable>
             ) : (
-              // Render a fallback if comments array is empty
               <></>
             )}
           </DragDropContext>

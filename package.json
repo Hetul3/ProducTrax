@@ -9,12 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^1.0.0",
+    "axios": "^1.4.0",
+    "howler": "^2.2.3",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.4.2",
     "next": "13.4.12",
+    "next-auth": "^4.22.3",
     "react": "18.2.0",
     "react-beautiful-dnd": "^13.1.1",
+    "react-countdown-circle-timer": "^3.2.1",
     "react-dom": "18.2.0",
     "react-icons": "^4.10.1",
+    "react-router-dom": "^6.14.2",
     "sass": "^1.64.1",
     "sass-google-fonts": "^1.0.1"
+  },
+  "devDependencies": {
+    "file-loader": "^6.2.0"
   }
 }
