@@ -2,7 +2,7 @@
 
 Combining the best productivity features in a minalist and coherent webapge 
 <br/><br/>
-Note: Database will be switching from Mongoose MongoDB to PostgreSQL in the coming weeks
+Note: Database will be switching from Mongoose MongoDB to PostgreSQL in the coming weeks, check out current progress of reworking the website <a href="https://github.com/Hetul3/productivity">Here</a>
 
 - [x] Make the todo list webpage with draggable elements
 - [x] Connect with database to seperate data from different users
